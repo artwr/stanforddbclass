@@ -1,0 +1,263 @@
+XSLT.txt
+
+
+
+ <?xml version="1.0" encoding="ISO-8859-1"?>
+    <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+        <xsl:template match="Department">
+            <Title> <xsl:value-of select="Title"/> </Title>
+        </xsl:template>
+    </xsl:stylesheet>
+
+--
+
+<?xml version="1.0" encoding="ISO-8859-1"?>
+    <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+        <xsl:template match="Department">
+            <Department>
+            <xsl:copy-of select="Title"/>
+            <xsl:copy-of select="Chair"/>
+            </Department>
+        </xsl:template>
+    </xsl:stylesheet>
+
+--
+To remove data we are not interested in.
+##################
+<xsl:template match="text()" />
+
+##################
+
+--Challenge Level
+
+--
+<?xml version="1.0" encoding="ISO-8859-1"?>
+    <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+        <xsl:template match="Department[Title=&quot;Electrical Engineering&quot;]/Course">
+            <xsl:copy-of select="."/>
+        </xsl:template>
+        
+        <xsl:template match="Department[Title=&quot;Electrical Engineering&quot;]/Course">
+            <Course Number="{data(@Number)}" Title="{Title}"> <xsl:copy-of select="Description"/> <xsl:apply-templates select="./Instructors/*" /> </Course>
+        </xsl:template>
+
+        <xsl:template match="Department[Title=&quot;Electrical Engineering&quot;]/Course/Instructors/*">
+            <Instructor> <xsl:value-of select="./Last_Name"/> </Instructor>
+        </xsl:template>
+
+        <xsl:template match="text()" />
+        
+    </xsl:stylesheet>
+
+
+--
+<xsl:template match="">
+        </xsl:template>
+--
+
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:output method="html" indent="yes" />
+
+<xsl:template match="/">
+   <html>
+   <table border="1">
+      <xsl:for-each select="Department[@Code=&quot;CS&quot;]/Course">
+      <xsl:sort select="Title" />
+         <xsl:if test="@Enrollment &lt; 200">
+            <tr>
+            <td><i><xsl:value-of select="@Number" /></i></td>
+            <td><b><xsl:value-of select="Title" /></b></td>
+            <td><xsl:value-of select="@Enrollment" /></td>
+            </tr>
+         </xsl:if>
+      </xsl:for-each>
+   </table>
+   </html>
+</xsl:template>
+
+</xsl:stylesheet>
+
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:output method="html" indent="yes" />
+
+<xsl:template match="/">
+   <table border="1">
+      <xsl:for-each select="/Department[@Code=&quot;CS&quot;]/Course">
+      <xsl:sort select="Title" />
+         <xsl:if test="@Enrollment &lt; 200">
+            <tr>
+            <td><i><xsl:value-of select="@Number" /></i></td>
+            <td><b><xsl:value-of select="Title" /></b></td>
+            <td><xsl:value-of select="@Enrollment" /></td>
+            </tr>
+         </xsl:if>
+      </xsl:for-each>
+   </table>
+</xsl:template>
+</xsl:stylesheet>
+
+
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:output method="html" indent="yes" />
+
+<xsl:template match="Course_Catalog">
+   <table border="1">
+      <xsl:for-each select="Department[Title=&quot;Computer Science&quot;]/Course">
+      <xsl:sort select="Title" />
+         <xsl:if test="@Enrollment &lt; 200">
+            <tr>
+            <td><i><xsl:value-of select="@Number" /></i></td>
+            <td><b><xsl:value-of select="Title" /></b></td>
+            <td><xsl:value-of select="@Enrollment" /></td>
+            </tr>
+         </xsl:if>
+      </xsl:for-each>
+   </table>
+</xsl:template>
+</xsl:stylesheet>
+
+
+
+
+
+--Countries
+
+<?xml version="1.0" encoding="ISO-8859-1"?>
+    <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+        <xsl:template match="country[@population &lt; 10000000 and @population &gt; 9000000]">
+            <xsl:copy-of select="."/>
+        </xsl:template>
+        
+        <xsl:template match="text()" />
+
+    </xsl:stylesheet>
+
+--
+
+<?xml version="1.0" encoding="ISO-8859-1"?>
+    <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+        <xsl:template match="country[contains(@name,&quot;stan&quot;) ]">
+            <Stan><xsl:value-of select="data(@name)"/></Stan>
+        </xsl:template>
+        
+        <xsl:template match="text()" />
+
+    </xsl:stylesheet>
+
+----Challenge Level
+
+
+--
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:output method="html" indent="yes" />
+
+<xsl:template match="Countries">
+   <table border="1">
+      <xsl:for-each select="Country[count(language) &gt; 3]">
+      <xsl:sort select="count(./language)" />
+         <xsl:if test="@Enrollment &lt; 200">
+            <tr>
+            <td><b><xsl:value-of select="@name" /></b></td>
+            <td><xsl:value-of select="@population" /></td>
+            <td><xsl:value-of select="@area" /></td>
+            <td><xsl:value-of select="count(./language)" /></td>
+            </tr>
+         </xsl:if>
+      </xsl:for-each>
+   </table>
+</xsl:template>
+</xsl:stylesheet>
+
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:template match="countries">
+   <html>
+   <table border="1">
+      <xsl:for-each select="country">
+      <xsl:sort select="count(./language)" order="descending"/>
+          <xsl:if test="count(./language) &gt; 3">
+            <tr>
+            <td><b><xsl:value-of select="@name" /></b></td>
+            <td><xsl:value-of select="@population" /></td>
+            <td><xsl:value-of select="@area" /></td>
+            <td><xsl:value-of select="count(./language)" /></td>
+            </tr>
+          </xsl:if>
+      </xsl:for-each>
+   </table>
+   </html>
+</xsl:template>
+</xsl:stylesheet>
+
+--
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:output method="xml" indent="yes" omit-xml-declaration="yes" />
+
+<xsl:template match="country">
+    <country languages="{count(./language)}" cities="{count(./city)}"> 
+    <name><xsl:value-of select="data(@name)" /></name>
+    <population><xsl:value-of select="data(@population)" /></population>
+    </country>
+</xsl:template>
+
+<xsl:template match="text()" />
+
+</xsl:stylesheet>
+
+
+XXXXXXXXXX
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:output method="xml" indent="yes" omit-xml-declaration="yes" />
+<xsl:template match="countries">
+     <countries>
+<xsl:template match="country">
+    <country languages="{count(./language)}" cities="{count(./city)}"> 
+    <name><xsl:value-of select="data(@name)" /></name>
+    <population><xsl:value-of select="data(@population)" /></population>
+    </country>
+</xsl:template>
+</countries>
+
+<xsl:template match="text()" />
+
+</xsl:template>
+</xsl:stylesheet>
+
+
+
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:output method="xml" indent="yes" omit-xml-declaration="yes" />
+<xsl:template match="countries">
+  <countries>
+    <xsl:for-each select="country">
+      <country languages="{count(./language)}" cities="{count(./city)}"> 
+      <name><xsl:value-of select="data(@name)" /></name>
+      <population><xsl:value-of select="data(@population)" /></population>
+      </country>
+    </xsl:for-each>
+  </countries>
+</xsl:template>
+</xsl:stylesheet>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<xsl:template match="text()" />

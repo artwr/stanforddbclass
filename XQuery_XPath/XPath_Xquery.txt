@@ -1,0 +1,381 @@
+XPath_Xquery.txt
+
+parent::
+self::
+following-sibling::
+precending-sibling::
+descendant::
+
+
+
+
+--
+doc("courses.xml")//Title
+
+
+for $d in doc("courses.xml")/Course_Catalog/Department
+return $d/Chair/Professor/Last_Name
+
+for $c in doc("courses.xml")/Course_Catalog/Department/Course
+where $c/@Enrollment > 500
+return $c/Title
+
+-
+for $d in doc("courses.xml")/Course_Catalog/Department
+where $d/Course/Prerequisites/Prereq= "CS106B"
+return $d/Title
+
+doc("courses.xml")/Course_Catalog/Department/Course[Prerequisites/Prereq = "CS106B"]/Title
+
+-
+for $d in doc("courses.xml")/Course_Catalog/Department
+
+    for $p in $d/Course/Instructors/Professors
+
+
+doc("courses.xml")/Course_Catalog/Department/(Chair|Course/Instructors)/(Professor|Lecturer)[Middle_Initial]/Last_Name
+
+doc("courses.xml")//*[name(self::*) = "Professor" and descendant::Middle_Initial or name(self::*) ="Lecturer" and descendant::Middle_Initial]/Last_Name
+
+XXXXX
+doc("courses.xml")//*[@Middle_Initial]/Last_Name
+
+-
+doc("courses.xml")/Course_Catalog/count(Department/Course[contains(Description,"Cross-listed")])
+
+
+-
+doc("courses.xml")/Course_Catalog/Department[Title = "Computer Science"]/avg(Course/@Enrollment)
+
+
+-
+
+doc("courses.xml")/Course_Catalog/Department/Course[@Enrollment > 100 and contains(Description,"system")]/Instructors/(Professor|Lecturer)/Last_Name
+
+
+-----Challenge Level
+
+doc("courses.xml")/Course_Catalog/Department/Course[@Enrollment = max(doc("courses.xml")/Course_Catalog/Department/Course/@Enrollment)]/Title
+
+-
+
+doc("courses.xml")/Course_Catalog/Department/Course[Title = following::Title or Title = preceding::Title]/data(@Number)
+
+-
+XXXX
+for $c in doc("courses.xml")/Course_Catalog/Department/Course
+where not(exists($c/Instructors/Lecturer))
+return count($c)
+
+doc("courses.xml")/Course_Catalog/count(Department/Course[count(Instructors/Lecturer) = 0])
+
+-
+
+doc("courses.xml")/Course_Catalog/Department/Course[Instructors/Professor/Last_Name = doc("courses.xml")/Course_Catalog/Department/Chair/Professor/Last_Name]/Title
+
+-
+doc("courses.xml")/Course_Catalog/Department/Course[Instructors/Professor/Last_Name = "Ng" and count(Instructors/Professor[Last_Name = "Thrun"]) =0]/Title
+
+-
+doc("courses.xml")/Course_Catalog/Department/Course[Prerequisites/Prereq = doc("courses.xml")/Course_Catalog/Department/Course[Instructors/(Professor|Lecturer)/Last_Name = "Roberts" and Instructors/(Professor|Lecturer)/First_Name = "Eric"]/data(@Number) ]/data(@Number)
+
+-
+
+
+<Summary>
+{for $c in doc("courses.xml")/Course_Catalog/Department[Title="Computer Science"]/Course
+order by xs:int($c/@Enrollment)
+return <Course> 
+                {$c/@Enrollment} 
+				{$c/Title}
+          </Course> }
+</Summary>
+
+-
+
+<Professors>
+{for $ln in distinct-values(doc("courses.xml")/Course_Catalog/Department/(Chair|Course/Instructors)/Professor/Last_Name)
+for $fn in distinct-values(doc("courses.xml")/Course_Catalog/Department/(Chair|Course/Instructors)/Professor[Last_Name=$ln]/First_Name)
+order by $ln
+return <Professor> 
+          <First_Name>{$fn}</First_Name>
+         {for $mi in distinct-values(doc("courses.xml")/Course_Catalog/Department/(Chair|Course/Instructors)/Professor[Last_Name=$ln and descendant::Middle_Initial]/Middle_Initial) return  <Middle_Initial> {$mi} </Middle_Initial>}
+          <Last_Name>{$ln}</Last_Name>        
+       </Professor> }
+</Professors>
+
+
+-
+XXXX
+<Inverted_Course_Catalog>
+{for $ln in distinct-values(doc("courses.xml")/Course_Catalog/Department/(Chair|Course/Instructors)/Professor/Last_Name)
+for $fn in distinct-values(doc("courses.xml")/Course_Catalog/Department/(Chair|Course/Instructors)/Professor[Last_Name=$ln]/First_Name)
+order by $ln
+return <Professor> 
+          <First_Name>{$fn}</First_Name>
+         {for $mi in distinct-values(doc("courses.xml")/Course_Catalog/Department/(Chair|Course/Instructors)/Professor[Last_Name=$ln and descendant::Middle_Initial]/Middle_Initial) return  <Middle_Initial> {$mi} </Middle_Initial>}
+          <Last_Name>{$ln}</Last_Name>
+          { let $ccount=count(doc("courses.xml")/Course_Catalog/Department/Course[
+                                 Instructors/Professor/Last_Name = $ln])
+          if ($ccount)
+          then
+          <Courses>
+          {for $c in doc("courses.xml")/Course_Catalog/Department/Course[
+                                 Instructors/Professor/Last_Name = $ln]
+  			return <Course> {$c/data(@Number)} </Course>
+          }
+          </Courses>
+          else ()}      
+       </Professor> }
+</Inverted_Course_Catalog>
+
+<Inverted_Course_Catalog>
+{for $l in distinct-values(doc("courses.xml")//Professor/Last_Name)
+for $f in distinct-values(doc("courses.xml")//Professor[Last_Name=$l]/First_Name)
+order by $l
+return <Professor>
+<First_Name>{$f}</First_Name>
+{for $m in distinct-values(doc("courses.xml")//Professor[Last_Name=$l and descendant::Middle_Initial]/Middle_Initial) 
+return <Middle_Initial>{$m}</Middle_Initial>}
+<Last_Name>{$l}</Last_Name>
+{let $cc:=doc("courses.xml")/Course_Catalog/Department/Course[Instructors/Professor/Last_Name = $l]
+return if ($cc)
+then
+<Courses>
+{for $c in doc("courses.xml")/Course_Catalog/Department/Course[Instructors/Professor/Last_Name = $l]
+return <Course> {$c/data(@Number)} </Course>}
+</Courses>
+else ()}      
+</Professor> }
+</Inverted_Course_Catalog>
+
+------ Countries
+
+-
+doc("countries.xml")/countries/country[@name="Mongolia"]/data(@area)
+
+-
+doc("countries.xml")/countries/country/city[name=doc("countries.xml")/countries/country/@name]/name
+
+-
+doc("countries.xml")/avg(countries/country[descendant::language="Russian"]/data(@population))
+
+-
+XXX
+doc("countries.xml")/countries/country[descendant::language="German" and language/@percentage > 50 ]/data(@name)
+
+doc("countries.xml")/countries/country/language[.="German" and @percentage > 50 ]/../data(@name)
+
+-
+doc("countries.xml")/countries/country[xs:int(@population) = max(doc("countries.xml")/countries/country/xs:int(data(@population)))]/data(@name)
+
+
+----Challenge Level
+doc("countries.xml")/countries/country[count(./city[population > 3000000]) > 2]/data(@name)
+
+
+-
+<result>
+<French>
+{
+for $fc in doc("countries.xml")/countries/country[descendant::language="French"]
+return <country>{$fc/data(@name)}</country>
+}
+</French>
+<German>
+{
+for $gc in doc("countries.xml")/countries/country[descendant::language="German"]
+return <country>{$gc/data(@name)}</country>
+}
+</German>
+</result>
+
+-
+<result>
+{}
+</result>
+
+
+<result>
+{
+  <highest density="{max(doc("countries.xml")/countries/country/fn:number(@population div @area))}"> 
+  {doc("countries.xml")/countries/country[fn:number(@population div @area) = max(doc("countries.xml")/countries/country/fn:number(@population div @area))]/data(@name)}
+  </highest> }
+    { <lowest density="{min(doc("countries.xml")/countries/country/fn:number(@population div @area))}">
+  {doc("countries.xml")/countries/country[fn:number(@population div @area) = min(doc("countries.xml")/countries/country/fn:number(@population div @area))]/data(@name)}
+  </lowest>
+}
+</result>
+
+<result>
+{for $c in doc("countries.xml")/countries/country
+where $c/fn:number(@population div @area) = max(doc("countries.xml")/countries/country/fn:number(@population div @area))
+return <highest density="{$c/fn:number(@population div @area)}">{$c/data(@name)}</highest>
+}
+{for $c2 in doc("countries.xml")/countries/country
+where $c2/fn:number(@population div @area) = min(doc("countries.xml")/countries/country/fn:number(@population div @area))
+return <lowest density="{$c2/fn:number(@population div @area)}">{$c2/data(@name)}</lowest>
+}
+</result>
+
+-
+doc("countries.xml")/countries/country[city/name = preceding::city/name or city/name = following::city/name]/data(@name)
+
+-
+doc("countries.xml")/countries/avg(country[descendant::language="Russian"]/count(language))
+
+-
+XXXX
+for $c in doc("countries.xml")/countries/country
+where some $l in $c/language
+         satisfies contains($c/@name, $l)
+return <country language="{$l}">{$c/data(@name)}</country>
+
+for $c in doc("countries.xml")/countries/country
+for $l in $c/language
+return if  (contains($c/@name, $l))
+then <country language="{$l}">{$c/data(@name)}</country>
+else ()
+
+-
+
+for $c in doc("countries.xml")/countries/country[count(./city[population > 7000000]) >0]
+return <country name="{$c/data(@name)}"> 
+       {for $ct in $c/city[population > 7000000]
+           return <big>{data($ct/name)}</big>
+        }
+       </country>
+
+
+-
+for $c in doc("countries.xml")/countries/country[language and sum(language/data(@percentage)) < 90]
+return <country> {$c/@name} {$c/language}
+       </country>
+
+-
+for $c in doc("countries.xml")/countries/country[language and max(language/data(@percentage)) < 20]
+return <country> {$c/@name} {$c/language}
+       </country>
+
+-
+for $l in doc("countries.xml")/countries/country[count(language) > 1]/language
+for $cm1 in doc("countries.xml")/countries/country[count(language) > 1 and language[@percentage=max(../language/@percentage)]=$l]
+for $cm2 in doc("countries.xml")/countries/country[count(language) > 1 and language[@percentage=min(../language/@percentage)]=$l]
+return <LangPair language="{data($l)}">
+  <MostPopular>{$cm1/data(@name)}</MostPopular>
+  <LeastPopular>{$cm2/data(@name)}</LeastPopular>
+</LangPair>
+
+
+XXXXX
+for $l in doc("countries.xml")/countries/country[count(language) > 1]/language
+where some $cm1 in doc("countries.xml")/countries/country[count(language) > 1] satisfies $cm1[count(language) > 1 and language[@percentage=max(../language/@percentage)]=$l] 
+and some $cm2 in doc("countries.xml")/countries/country[count(language) > 1] satisfies $cm2[count(language) > 1 and language[@percentage=min(../language/@percentage)]=$l]
+return <LangPair language="{data($l)}">
+  <MostPopular>{$cm1/data(@name)}</MostPopular>
+  <LeastPopular>{$cm2/data(@name)}</LeastPopular>
+</LangPair>
+
+
+for $l in doc("countries.xml")/countries/country[count(language) > 1]/language
+for $cm1 in doc("countries.xml")/countries/country[count(language) > 1 and language[@percentage=max(../language/@percentage)]=$l]
+where some $cm2 in doc("countries.xml")/countries/country[count(language) > 1] satisfies $cm2[count(language) > 1 and language[@percentage=min(../language/@percentage)]=$l]
+return <LangPair language="{data($l)}">
+  {<MostPopular>{$cm1/data(@name)}</MostPopular>}
+  {<LeastPopular>{for $cm2 in doc("countries.xml")/countries/country[count(language) > 1 and language[@percentage=min(../language/@percentage)]=$l] return $cm2/data(@name)}</LeastPopular>}
+</LangPair>
+
+
+for $l in doc("countries.xml")/countries/country[count(language) > 1]/language
+for $cm1 in doc("countries.xml")/countries/country[count(language) > 1 and language[@percentage=max(../language/@percentage)]=$l]
+where some $cm2 in doc("countries.xml")/countries/country[count(language) > 1] satisfies $cm2[count(language) > 1 and language[@percentage=min(../language/@percentage)]=$l]
+return <LangPair language="{data($l)}">
+  {<MostPopular>{$cm1/data(@name)}</MostPopular>}
+  {<LeastPopular>{for $cm2 in doc("countries.xml")/countries/country[count(language) > 1 and language[@percentage=min(../language/@percentage)]=$l] return $cm2/data(@name)}</LeastPopular>}
+</LangPair>
+
+for $l in distinct-values(doc("countries.xml")/countries/country[count(language) > 1]/language)
+for $cm1 in doc("countries.xml")/countries/country[count(language) > 1 and language[@percentage=max(../language/@percentage)]=$l]
+for $cm2 in doc("countries.xml")/countries/country[count(language) > 1 and language[@percentage=min(../language/@percentage)]=$l]
+return <LangPair language="{data($l)}">
+  <MostPopular>{$cm1/data(@name)}</MostPopular>
+  <LeastPopular>{$cm2/data(@name)}</LeastPopular>
+</LangPair>
+
+for $l in doc("countries.xml")/countries/country[count(language) > 1]/language
+for $cm1 in distinct-values(doc("countries.xml")/countries/country[count(language) > 1 and language[@percentage=max(../language/@percentage)]=$l]/data(@name))
+for $cm2 in doc("countries.xml")/countries/country[count(language) > 1 and language[@percentage=min(../language/@percentage)]=$l]
+return <LangPair language="{data($l)}">
+  <MostPopular>{$cm1}</MostPopular>
+  <LeastPopular>{$cm2/data(@name)}</LeastPopular>
+</LangPair>
+
+for $l in doc("countries.xml")/countries/country[count(language) > 1]/language
+for $cm1 in distinct-values(doc("countries.xml")/countries/country[count(language) > 1 and language[@percentage=max(../language/@percentage)]=$l]/data(@name))
+for $cm2 in doc("countries.xml")/countries/country[count(language) > 1 and language[@percentage=min(../language/@percentage)]=$l]
+return <LangPair language="{data($l)}">
+  <MostPopular>{$cm1}</MostPopular>
+  <LeastPopular>{$cm2/data(@name)}</LeastPopular>
+</LangPair>
+
+
+for $l in distinct-values(doc("countries.xml")/countries/country[count(language) > 1]/language)
+for $cm1 in doc("countries.xml")/countries/country[count(language) > 1 and language[@percentage=max(../language/@percentage)]=$l]
+for $cm2 in doc("countries.xml")/countries/country[count(language) > 1 and language[@percentage=min(../language/@percentage)]=$l]
+order by $cm1/@name
+return <LangPair language="{data($l)}">
+  <MostPopular>{$cm1/data(@name)}</MostPopular>
+  <LeastPopular>{$cm2/data(@name)}</LeastPopular>
+</LangPair>
+
+--More elegant--
+
+for $c1 in doc("countries.xml")/countries/country[count(language) > 1]
+for $c2 in doc("countries.xml")/countries/country[count(language) > 1]
+where $c1/language[@percentage=max(../language/@percentage)]=$c2/language[@percentage=min(../language/@percentage)]
+return
+<LangPair language="{data($c1/language[@percentage=max(../language/@percentage)])}">
+  <MostPopular>{$c1/data(@name)}</MostPopular>
+  <LeastPopular>{$c2/data(@name)}</LeastPopular>
+</LangPair>
+
+
+-
+<languages>
+  { for $l in distinct-values(doc("countries.xml")//language)
+    return
+       <language name="{data($l)}">
+          {for $c in doc("countries.xml")/countries/country[descendant::language = $l]
+            return <country name="{$c/data(@name)}" speakers="{xs:int($c/@population) * xs:float(xs:int($c/language[self::*=$l]/data(@percentage) div 100))}"> 
+                   </country> }
+       </language>}
+</languages>
+
+<languages>
+  { for $l in distinct-values(doc("countries.xml")//language)
+order by $l
+    return
+       <language name="{data($l)}">
+          {for $c in doc("countries.xml")/countries/country[descendant::language = $l]
+            return <country name="{$c/data(@name)}" speakers="{fn:floor(xs:int($c/@population) * xs:float(xs:float($c/language[self::*=$l]/data(@percentage)) div 100))}"> 
+                   </country> }
+       </language>}
+</languages>
+
+<languages>
+  { for $l in distinct-values(doc("countries.xml")//language)
+order by $l
+    return
+       <language name="{data($l)}">
+          {for $c in doc("countries.xml")/countries/country[descendant::language = $l]
+            return <country name="{$c/data(@name)}" speakers="{xs:int( $c/@population * $c/language[self::*=$l]/data(@percentage) div 100)}"> 
+                   </country> }
+       </language>}
+</languages>
+
+
+
+
+
+
+

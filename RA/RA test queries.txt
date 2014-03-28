@@ -1,0 +1,55 @@
+RA test queries
+
+\project_{pizza} (
+      ((\project_{name} Person)          
+       \diff
+(\project_{name}  \select_{pizzeria='Dominos'} Frequents) \join Eats))     
+
+
+
+
+\project_{pizza} (\select_{gender='female' and age>20} Person \join Eats )
+
+
+\project_{name} (\select_{gender='female'} Person \join (Eats \join \select_{pizzeria='Straw Hat'} Serves))
+
+\project_{pizzeria} (\select_{price<10} Serves \join \select_{name='Amy' or name='Fay'} Eats)
+
+
+\project_{pizzeria} (((\rename_{name,pizzaf} \select_{name='Fay'} Eats) \join_{pizzaf=pizzaa} (\rename_{name,pizzaa} \select_{name='Amy'} Eats)) \join_{pizzaf=pizza} \select_{price<10} Serves)
+
+
+\project_{name} (\select_{pizzeria='Dominos'} Serves \join Eats) \diff
+\project_{name}  (\select_{pizzeria='Dominos'} Frequents)
+
+
+
+=====================================
+
+Challenge
+
+(\project_{pizza} (Eats)
+\diff
+\project_{pizza} (Eats \join \select_{age>=24} Person))
+\union
+(\project_{pizza} (Serves)
+\diff
+\project_{pizza} (\select_{price >=10} Serves))
+
+
+\project_{age} (\select_{pizza='mushroom'} Eats \join Person)
+\diff
+\rename_{age} (\project_{age2}
+(\rename_{name1,age1} \project_{name,age} (\select_{pizza='mushroom'} Eats \join Person) \join_{age1>age2}
+\rename_{name2,age2} \project_{name,age} (\select_{pizza='mushroom'} Eats \join Person)))
+
+\project_{pizzeria} Serves
+\diff
+\project_{pizzeria} (Serves \join Eats \join (\project_{pizza} Eats
+\diff
+\project_{pizza}(\select_{age>30} Person \join Eats)))
+
+
+
+
+\project_{pizzeria} \select_{pizza<pizza1} ((\project_{pizza}(\select_{age>30} Person \join Eats) \join Serves) \join_{pizzeria=pizzeria1} \rename_{pizza1,pizzeria1,price}(\project_{pizza}(\select_{age>30} Person \join Eats) \join Serves))

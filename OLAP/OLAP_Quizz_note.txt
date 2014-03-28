@@ -1,0 +1,23 @@
+Question 2
+
+Consider a fact table Facts(D1,D2,D3,x), and the following three queries:
+
+Q1: Select D1,D2,D3,Sum(x)
+    From Facts
+    Group By D1,D2,D3
+
+Q2: Select D1,D2,D3,Sum(x)
+    From Facts
+    Group By D1,D2,D3 WITH CUBE
+
+Q3: Select D1,D2,D3,Sum(x)
+    From Facts
+    Group By D1,D2,D3 WITH ROLLUP
+Suppose attributes D1, D2, and D3 have n1, n2, and n3 different values respectively, and assume that each possible combination of values appears at least once in table Facts. The number of tuples in the result of each of the three queries above can be specified as an arithmetic formula involving n1, n2, and n3. Pick the one tuple (a,b,c,d,e,f) in the list below such that when n1=a, n2=b, and n3=c, then the result sizes of queries Q1, Q2, and Q3 are d, e, and f respectively. (Hint: It may be helpful to first write formulas describing how d, e, and f depend on a, b, and c. Then find the answer that satisfies your formulas.)
+1
+(5, 4, 3, 12, 100, 80)
+✔ (5, 10, 10, 500, 726, 556)
+(2, 2, 2, 8, 27, 14)
+(5, 10, 10, 500, 1000, 550)
+
+Query Q1 has one tuple for each combination of values for the three attributes, so the formula is n1 x n2 x n3. Query Q2 has one tuple for each combination of values for the three attributes, with NULL as an additional possible value for each attribute. Thus, the formula is (n1+1) x (n2+1) x (n3+1). In query Q3, in addition to all combinations of values, result tuples may have NULL in attribute D3, or NULL in both attributes D2 and D3, or NULL in all three attributes. (They may not, however, have NULLs in other combinations, such as just attribute D1, or just attributes D1 and D3.) For this case, the formula is (n1 x n2 x n3) + (n1 x n2) + n1 + 1.

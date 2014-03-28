@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+
+<CityInfo Name="Berkeley">
+	<Government>
+	<Mayor>Bates</Mayor>
+	<Assistant>Ortiz</Assistant>
+	</Government>
+	<Neighborhood Name="1">
+	 <Library></Library>
+	</Neighborhood>
+	<Neighborhood Name="2">
+	<Bookshop></Bookshop>
+	</Neighborhood>
+	<Neighborhood Name="3">
+	<Library></Library>
+	</Neighborhood>
+	<Neighborhood Name="4">
+	</Neighborhood>
+</CityInfo>

@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+
+<PassengerInfo>
+    <Name>John Doe</Name>
+    <Seat>DTC</Seat> 
+    <Snack>cahouetes</Snack>
+    <Snack>pretzels</Snack>
+</PassengerInfo>
